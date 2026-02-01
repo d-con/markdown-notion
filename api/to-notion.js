@@ -6,12 +6,17 @@ module.exports = async (req, res) => {
   }
 
   try {
-    // Parse raw body (Vercel doesn't auto-parse JSON)
+    // Vercel gives raw Buffer - convert to string first
+    const rawBody = req.body.toString('utf8');
+    
     let body;
     try {
-      body = JSON.parse(req.body);
-    } catch {
-      return res.status(400).json({ error: 'Invalid JSON' });
+      body = JSON.parse(rawBody);
+    } catch (e) {
+      return res.status(400).json({ 
+        error: 'Invalid JSON', 
+        rawBody: rawBody.substring(0, 100) // debug first 100 chars
+      });
     }
 
     const { markdown } = body;
