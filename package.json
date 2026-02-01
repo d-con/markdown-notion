@@ -1,0 +1,8 @@
+{
+  "name": "notion-markdown-api",
+  "version": "1.0.0",
+  "dependencies": {
+    "@tryfabric/martian": "1.2.4",
+    "express": "4.19.2"
+  }
+}
