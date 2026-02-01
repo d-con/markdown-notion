@@ -1,13 +1,20 @@
 const { markdownToBlocks } = require('@tryfabric/martian');
 
 module.exports = async (req, res) => {
-  // Only handle POST
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
   try {
-    const { markdown } = req.body;
+    // Parse raw body (Vercel doesn't auto-parse JSON)
+    let body;
+    try {
+      body = JSON.parse(req.body);
+    } catch {
+      return res.status(400).json({ error: 'Invalid JSON' });
+    }
+
+    const { markdown } = body;
     
     if (!markdown || typeof markdown !== 'string') {
       return res.status(400).json({ error: 'markdown required' });
