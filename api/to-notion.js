@@ -1,20 +1,21 @@
-module.exports = async (req, res) => {
-  // DEBUG: Log everything we get
-  console.log('Method:', req.method);
-  console.log('Headers:', req.headers);
-  console.log('Body type:', typeof req.body);
-  console.log('Raw body:', req.body ? req.body.toString() : 'EMPTY');
+const { markdownToBlocks } = require('@tryfabric/martian');
 
+module.exports = async (req, res) => {
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'POST required' });
   }
 
-  res.json({ 
-    debug: {
-      method: req.method,
-      headers: req.headers['content-type'],
-      bodyType: typeof req.body,
-      rawBody: req.body ? req.body.toString('utf8') : 'EMPTY'
+  try {
+    const { markdown } = req.body;  // Already parsed object!
+    
+    if (!markdown || typeof markdown !== 'string') {
+      return res.status(400).json({ error: 'markdown required' });
     }
-  });
+
+    const blocks = markdownToBlocks(markdown);
+    res.json({ children: blocks });
+  } catch (error) {
+    console.error('Error:', error);
+    res.status(500).json({ error: error.message });
+  }
 };
