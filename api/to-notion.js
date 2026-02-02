@@ -13,6 +13,24 @@ module.exports = async (req, res) => {
     }
 
     const blocks = markdownToBlocks(markdown);
+    
+    // Debug logging
+    console.log('Blocks type:', typeof blocks);
+    console.log('Blocks is array:', Array.isArray(blocks));
+    console.log('Blocks length:', blocks?.length);
+    
+    // Test JSON serialization
+    try {
+      const testSerialization = JSON.stringify({ children: blocks });
+      console.log('Serialization successful, size:', testSerialization.length);
+    } catch (jsonError) {
+      console.error('JSON serialization failed:', jsonError.message);
+      return res.status(500).json({ 
+        error: 'Failed to serialize blocks to JSON', 
+        details: jsonError.message 
+      });
+    }
+    
     res.json({ children: blocks });
   } catch (error) {
     console.error('Error:', error);
